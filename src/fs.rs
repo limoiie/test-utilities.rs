@@ -7,28 +7,46 @@ pub enum TempFileKind {
     Text,
 }
 
-pub struct TempFileFaker<L> {
+pub struct TempFileFaker<L = Faker> {
     kind: TempFileKind,
     len: L,
-    with_content: bool,
+    include_content: bool,
 }
 
 impl TempFileFaker<Faker> {
-    pub fn with(kind: TempFileKind, with_content: bool) -> Self {
+    pub fn new() -> TempFileFaker<Faker> {
         TempFileFaker {
-            kind,
+            kind: TempFileKind::Text,
             len: Faker,
-            with_content,
+            include_content: true,
         }
     }
 }
 
 impl<T> TempFileFaker<T> {
-    pub fn new(kind: TempFileKind, len: T, with_content: bool) -> Self {
+    pub fn with_len(len: T) -> Self {
         TempFileFaker {
-            kind,
+            kind: TempFileKind::Text,
             len,
-            with_content,
+            include_content: true,
+        }
+    }
+
+    pub fn kind(mut self, kind: TempFileKind) -> Self {
+        self.kind = kind;
+        self
+    }
+
+    pub fn include_content(mut self, with_content: bool) -> Self {
+        self.include_content = with_content;
+        self
+    }
+
+    pub fn len<U>(self, len: U) -> TempFileFaker<U> {
+        TempFileFaker::<U> {
+            kind: self.kind,
+            len,
+            include_content: self.include_content,
         }
     }
 }
@@ -51,7 +69,7 @@ where
 
         TempFile {
             path,
-            content: if config.with_content {
+            content: if config.include_content {
                 Some(content)
             } else {
                 None
@@ -91,7 +109,9 @@ mod tests {
         let temp_path: std::path::PathBuf;
         {
             let range = 20..40;
-            let faker = TempFileFaker::new(TempFileKind::Text, range.clone(), true);
+            let faker = TempFileFaker::with_len(range.clone())
+                .kind(TempFileKind::Text)
+                .include_content(true);
             let temp_file = faker.fake::<TempFile>();
             temp_path = temp_file.path.to_path_buf();
 
@@ -115,7 +135,9 @@ mod tests {
         let temp_path: std::path::PathBuf;
         {
             let range = 20..40;
-            let faker = TempFileFaker::new(TempFileKind::Text, range.clone(), false);
+            let faker = TempFileFaker::with_len(range.clone())
+                .kind(TempFileKind::Text)
+                .include_content(false);
             let temp_file = faker.fake::<TempFile>();
             temp_path = temp_file.path.to_path_buf();
 
@@ -135,7 +157,9 @@ mod tests {
     fn test_fake_temp_file_with() {
         let temp_path: std::path::PathBuf;
         {
-            let faker = TempFileFaker::with(TempFileKind::Text, true);
+            let faker = TempFileFaker::new()
+                .kind(TempFileKind::Text)
+                .include_content(true);
             let temp_file = faker.fake::<TempFile>();
             temp_path = temp_file.path.to_path_buf();
 
@@ -153,7 +177,9 @@ mod tests {
     fn test_fake_temp_path() {
         let temp_path: std::path::PathBuf;
         {
-            let faker = TempFileFaker::with(TempFileKind::Text, true);
+            let faker = TempFileFaker::new()
+                .kind(TempFileKind::Text)
+                .include_content(true);
             let temp_path_inst = faker.fake::<TempPath>();
             temp_path = temp_path_inst.to_path_buf();
 
