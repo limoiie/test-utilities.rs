@@ -96,10 +96,10 @@ mod tests {
     #[tokio::test]
     async fn test_fake_temp_file() {
         let handler = ContainerBuilder::new("mongo")
-            .port_mapping(30017, Some(27017))
+            .bind_port_as_default(Some("0"), "27017")
             .build_disposable()
             .await;
-        let db = Client::with_uri_str(handler.url.as_ref().unwrap())
+        let db = Client::with_uri_str(handler.url())
             .await
             .unwrap()
             .database("testdb");
