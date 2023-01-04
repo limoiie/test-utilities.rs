@@ -243,7 +243,7 @@ impl ContainerInspectResponseExt for ContainerInspectResponse {
     fn get_name(&self) -> Option<String> {
         self.name.as_ref().map(|name| match name.strip_prefix("/") {
             Some(stripped) => stripped.to_string(),
-            None => name.clone(),
+            _ => name.clone(),
         })
     }
 }
