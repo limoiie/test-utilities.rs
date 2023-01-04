@@ -63,10 +63,10 @@ pub struct TempFile {
 
 impl<L> Dummy<TempFileFaker<L>> for TempFile
 where
-    u8: Dummy<L>,
+    usize: Dummy<L>,
 {
     fn dummy_with_rng<R: Rng + ?Sized>(config: &TempFileFaker<L>, mut rng: &mut R) -> Self {
-        let len = config.len.fake_with_rng::<u8, R>(rng) as usize;
+        let len = config.len.fake_with_rng::<usize, R>(rng);
         let content = fake_content(&config.kind, len, &mut rng);
 
         let mut bucket = config.bucket.borrow_mut();
