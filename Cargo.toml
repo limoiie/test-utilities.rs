@@ -11,7 +11,7 @@ fake = "2.5.0"
 futures = "0.3.24"
 log = "0.4.17"
 mongodb = { version = "2.3.1", features = ["tokio-sync"], optional = true }
-mongodb-gridfs = { version = "0.2.2", optional = true }
+mongodb-gridfs = { git = "https://github.com/limoiie/mongodb-gridfs-rs", tag = "v0.2.3-patched", optional = true }
 rand = "0.8.5"
 tempfile = { version = "3.3.0", optional = true }
 tokio = { version = "1.21.2", features = ["full"] }
